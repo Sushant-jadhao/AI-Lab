@@ -17,7 +17,7 @@ start:-
     write('We will help you find a movie'),nl,
     write('What type of movie you want to watch(hollywood,bollywood)?'),read(Type),nl,
     write('What is preferable language of movie(english/hindi)?'),read(Language),nl,
-    write('What is  your preferred platform(netflix,hotstar,amazonprime)?'),read(Platform),nl
+    write('What is  your preferred platform(netflix,hotstar,amazonprime)?'),read(Platform),nl,
     write('What should be the theme of a movie(horror,comedy,motivational,patriotic)?'),read(Theme),nl,
     identify_movie(Type,Language,Platform,Theme,Movie),
     (
