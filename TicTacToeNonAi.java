@@ -1,137 +1,175 @@
+
 import java.util.Scanner;
 
-public class TicTacToeNonAi {
-    // Function to convert a number from 1-9 to row and column indices
-    static void convertToRowCol(int number, int[] rowCol) {
-        rowCol[0] = (number - 1) / 3;
-        rowCol[1] = (number - 1) % 3;
-    }
+public class tictactoenonai {
+    private static final int SIZE = 3;
 
-    // Function to print the Tic-Tac-Toe board
-    static void printBoard(char[][] board) {
+    private static void printBoard(char[][] board) {
         System.out.println("-------------");
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < SIZE; i++) {
             System.out.print("| ");
-            for (int j = 0; j < 3; j++) {
+            for (int j = 0; j < SIZE; j++) {
                 System.out.print(board[i][j] + " | ");
             }
             System.out.println("\n-------------");
         }
     }
 
-    // Function to check if a player has won
-    static boolean isWinner(char[][] board, char player) {
-        for (int i = 0; i < 3; i++) {
+  
+    private static int isGameOver(char[][] board, char player) {
+        
+        for (int i = 0; i < SIZE; i++) {
             if ((board[i][0] == player && board[i][1] == player && board[i][2] == player) ||
                     (board[0][i] == player && board[1][i] == player && board[2][i] == player)) {
-                return true; // Player has won
+                return 1; // Player wins
             }
         }
+
+        
         if ((board[0][0] == player && board[1][1] == player && board[2][2] == player) ||
                 (board[0][2] == player && board[1][1] == player && board[2][0] == player)) {
-            return true; // Player has won
+            return 1; // Player wins
         }
-        return false; // No winner yet
+
+       
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (board[i][j] == ' ')
+                    return 0; // The game is not over yet
+            }
+        }
+
+        return -1; // It's a draw
     }
 
-    // Function to check if the board is full
-    static boolean isBoardFull(char[][] board) {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
+    
+    private static int isValidMove(char[][] board, int row, int col) {
+        if (row < 0 || row >= SIZE || col < 0 || col >= SIZE)
+            return 0; 
+        if (board[row][col] != ' ')
+            return 0; 
+        return 1; 
+    }
+
+  
+    private static void computerMove(char[][] board, char player) {
+       
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
                 if (board[i][j] == ' ') {
-                    return false; // Board is not full
-                }
-            }
-        }
-        return true; // Board is full
-    }
-
-    // Function to get an empty corner
-    static boolean getEmptyCorner(char[][] board, int[] rowCol) {
-        int[][] emptyCorners = { { 0, 0 }, { 0, 2 }, { 2, 0 }, { 2, 2 } };
-        for (int[] corner : emptyCorners) {
-            if (board[corner[0]][corner[1]] == ' ') {
-                rowCol[0] = corner[0];
-                rowCol[1] = corner[1];
-                return true; // Found an empty corner
-            }
-        }
-        return false; // No empty corner found
-    }
-
-    // Function for the computer to make a move
-    static void makeComputerMove(char[][] board) {
-        // Check if the opponent placed an "X" in the center
-        if (board[1][1] == 'X') {
-            // Respond by placing an "O" in one of the corners
-            int[] rowCol = new int[2];
-            if (getEmptyCorner(board, rowCol)) {
-                board[rowCol[0]][rowCol[1]] = 'O';
-            }
-        } else {
-            // If the center is empty, place an "O" in the center
-            if (board[1][1] == ' ') {
-                board[1][1] = 'O';
-            } else {
-                // Place an "O" in the first available empty cell
-                for (int i = 0; i < 3; i++) {
-                    for (int j = 0; j < 3; j++) {
-                        if (board[i][j] == ' ') {
-                            board[i][j] = 'O';
-                            return;
-                        }
+                    board[i][j] = player;
+                    if (isGameOver(board, player)==1) {
+                        return; 
                     }
+                    board[i][j] = ' ';
                 }
             }
         }
-    }
 
-    // Main game loop
-    static void playTicTacToe() {
-        char[][] board = { { ' ', ' ', ' ' }, { ' ', ' ', ' ' }, { ' ', ' ', ' ' } };
-        boolean playerTurn = true; // true for player X, false for player O
-        Scanner scanner = new Scanner(System.in);
-
-        while (true) {
-            printBoard(board);
-
-            if (playerTurn) {
-                // Player X's turn
-                System.out.print("Player X, enter a number from 1 to 9: ");
-                int number = scanner.nextInt();
-
-                int[] rowCol = new int[2];
-                convertToRowCol(number, rowCol);
-
-                if (number >= 1 && number <= 9 && board[rowCol[0]][rowCol[1]] == ' ') {
-                    board[rowCol[0]][rowCol[1]] = 'X';
-                    playerTurn = false;
-                } else {
-                    System.out.println("Invalid move. Try again.");
+       
+        char opponent = (player == 'X') ? 'O' : 'X';
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (board[i][j] == ' ') {
+                    board[i][j] = opponent;
+                    if (isGameOver(board, opponent)==1) {
+                        board[i][j] = player; 
+                        return;
+                    }
+                    board[i][j] = ' '; 
                 }
-            } else {
-                // Player O's turn (Computer)
-                makeComputerMove(board);
-                playerTurn = true;
             }
+        }
 
-            if (isWinner(board, 'X')) {
-                printBoard(board);
-                System.out.println("Player X wins!");
-                break;
-            } else if (isWinner(board, 'O')) {
-                printBoard(board);
-                System.out.println("Player O wins!");
-                break;
-            } else if (isBoardFull(board)) {
-                printBoard(board);
-                System.out.println("It's a tie!");
-                break;
+        // Play in the center if available
+        if (board[1][1] == ' ') {
+            board[1][1] = player;
+            return;
+        }
+
+        // Play in a corner if available
+        int[][] corners = {{0, 0}, {0, 2}, {2, 0}, {2, 2}};
+        for (int i = 0; i < 4; i++) {
+            int row = corners[i][0];
+            int col = corners[i][1];
+            if (board[row][col] == ' ') {
+                board[row][col] = player;
+                return;
+            }
+        }
+
+        // Play in any available edge
+        int[][] edges = {{0, 1}, {1, 0}, {1, 2}, {2, 1}};
+        for (int i = 0; i < 4; i++) {
+            int row = edges[i][0];
+            int col = edges[i][1];
+            if (board[row][col] == ' ') {
+                board[row][col] = player;
+                return;
             }
         }
     }
 
     public static void main(String[] args) {
-        playTicTacToe();
+        char[][] board = {
+                {' ', ' ', ' '},
+                {' ', ' ', ' '},
+                {' ', ' ', ' '}
+        };
+
+        System.out.println("TIC-TAC-TOE");
+
+        Scanner scanner = new Scanner(System.in);
+
+        char currentPlayer;
+        System.out.print("Who plays first? (Human(h)/Computer(c): ");
+        currentPlayer = scanner.next().charAt(0);
+
+        int row, col, moveCount = 0;
+        int gameOver = 0;
+
+        while (gameOver == 0) {
+            System.out.println();
+
+            if (currentPlayer == 'h') {
+                System.out.println("Your turn (X):");
+                printBoard(board);
+
+                
+                System.out.print("Enter row (0, 1, or 2) and column (0, 1, or 2): ");
+                row = scanner.nextInt();
+                col = scanner.nextInt();
+
+                if (isValidMove(board, row, col) == 1) {
+                    board[row][col] = 'X';
+                    moveCount++;
+                    gameOver = isGameOver(board, 'X');
+                    currentPlayer = 'c'; 
+                } else {
+                    System.out.println("Invalid move. Try again.");
+                }
+            } else {
+                System.out.println("Computer's turn (O):");
+                computerMove(board, 'O'); 
+                moveCount++;
+                printBoard(board);
+                gameOver = isGameOver(board, 'O');
+                currentPlayer = 'h'; 
+            }
+        }
+
+        if (isGameOver(board, 'X')==1) {
+            printBoard(board);
+            System.out.println("Player X wins!");
+        } 
+        else if (isGameOver(board, 'O')==1) {
+        	printBoard(board);
+            System.out.println("Player O wins!");
+		}else {
+            printBoard(board);
+            System.out.println("It's a draw!");
+        }
+
+        scanner.close();
     }
 }
