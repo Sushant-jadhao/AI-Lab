@@ -1,7 +1,7 @@
 
 import java.util.Scanner;
 
-public class tictactoenonai {
+public class TicTacToeNonAi {
     private static final int SIZE = 3;
 
     private static void printBoard(char[][] board) {

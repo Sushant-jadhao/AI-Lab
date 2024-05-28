@@ -1,7 +1,7 @@
 
 import java.util.*;
 
-public class iddfs {
+public class MCLDDFS {
     public static int depthCount = 1;
 
     static class State {

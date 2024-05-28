@@ -1,7 +1,7 @@
 
 import java.util.*;
 
-public class bfs {
+public class MCBfs {
     static class State {
         int mr, ml, cr, cl;
         boolean bl;

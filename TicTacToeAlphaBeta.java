@@ -1,73 +1,174 @@
-import java.util.*;
+import java.util.Scanner;
 
 public class TicTacToeAlphaBeta {
-    private static final char HUMAN_PLAYER = 'X';
-    private static final char AI_PLAYER = 'O';
-    private static final char EMPTY = ' ';
 
-    public static void main(String[] args) {
-        char[][] board = {
-                { EMPTY, EMPTY, EMPTY },
-                { EMPTY, EMPTY, EMPTY },
-                { EMPTY, EMPTY, EMPTY }
-        };
+    static final int SIZE = 3;
 
+    // Function to initialize the board
+    public static void initializeBoard(char[][] board) {
+        for (int i = 0; i < SIZE; ++i) {
+            for (int j = 0; j < SIZE; ++j) {
+                board[i][j] = '-';
+            }
+        }
+    }
+
+    // Function to print the board
+    public static void printBoard(char[][] board) {
+        System.out.println();
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                System.out.print(" " + board[i][j] + " ");
+                if (j < SIZE - 1) {
+                    System.out.print("|");
+                }
+            }
+            System.out.println();
+            if (i < SIZE - 1) {
+                for (int k = 0; k < SIZE; k++) {
+                    System.out.print("---");
+                    if (k < SIZE - 1) {
+                        System.out.print("|");
+                    }
+                }
+                System.out.println();
+            }
+        }
+        System.out.println();
+    }
+
+    // Function to check if the board is full
+    public static boolean isBoardFull(char[][] board) {
+        for (int i = 0; i < SIZE; ++i) {
+            for (int j = 0; j < SIZE; ++j) {
+                if (board[i][j] == '-')
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    // Function to check if the game is over
+    public static boolean isGameOver(char[][] board) {
+        return evaluateBoard(board) != 0 || isBoardFull(board);
+    }
+
+    // Function to evaluate the board
+    public static int evaluateBoard(char[][] board) {
+        // Check rows
+        for (int i = 0; i < SIZE; ++i) {
+            if (board[i][0] != '-' && board[i][0] == board[i][1] && board[i][1] == board[i][2]) {
+                if (board[i][0] == 'X')
+                    return 10;
+                else
+                    return -10;
+            }
+        }
+        // Check columns
+        for (int j = 0; j < SIZE; ++j) {
+            if (board[0][j] != '-' && board[0][j] == board[1][j] && board[1][j] == board[2][j]) {
+                if (board[0][j] == 'X')
+                    return 10;
+                else
+                    return -10;
+            }
+        }
+        // Check diagonals
+        if (board[0][0] != '-' && board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
+            if (board[0][0] == 'X')
+                return 10;
+            else
+                return -10;
+        }
+        if (board[0][2] != '-' && board[0][2] == board[1][1] && board[1][1] == board[2][0]) {
+            if (board[0][2] == 'X')
+                return 10;
+            else
+                return -10;
+        }
+        return 0;
+    }
+
+    // Function to implement the minimax algorithm with alpha-beta pruning
+    public static int minimax(char[][] board, int depth, boolean isMax, int alpha, int beta) {
+        int score = evaluateBoard(board);
+
+        if (score == 10)
+            return score;
+        if (score == -10)
+            return score;
+        if (isBoardFull(board))
+            return 0;
+
+        if (isMax) {
+            int best = -1000;
+
+            for (int i = 0; i < SIZE; i++) {
+                for (int j = 0; j < SIZE; j++) {
+                    if (board[i][j] == '-') {
+                        board[i][j] = 'X';
+                        best = Math.max(best, minimax(board, depth + 1, false, alpha, beta));
+                        board[i][j] = '-';
+                        alpha = Math.max(alpha, best);
+                        if (beta <= alpha)
+                            break;
+                    }
+                }
+            }
+            return best;
+        } else {
+            int best = 1000;
+
+            for (int i = 0; i < SIZE; i++) {
+                for (int j = 0; j < SIZE; j++) {
+                    if (board[i][j] == '-') {
+                        board[i][j] = 'O';
+                        best = Math.min(best, minimax(board, depth + 1, true, alpha, beta));
+                        board[i][j] = '-';
+                        beta = Math.min(beta, best);
+                        if (beta <= alpha)
+                            break;
+                    }
+                }
+            }
+            return best;
+        }
+    }
+
+    // Function to find the optimal move for AI
+    public static void findBestMove(char[][] board) {
+        int bestVal = -1000;
+        int row = -1, col = -1;
+
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (board[i][j] == '-') {
+                    board[i][j] = 'X';
+                    int moveVal = minimax(board, 0, false, -1000, 1000);
+                    board[i][j] = '-';
+
+                    if (moveVal > bestVal) {
+                        row = i;
+                        col = j;
+                        bestVal = moveVal;
+                    }
+                }
+            }
+        }
+        System.out.println("Computer's Move: (" + row + ", " + col + ")");
+        board[row][col] = 'X';
+    }
+
+    // Function for player's move
+    public static void playerMove(char[][] board) {
         Scanner scanner = new Scanner(System.in);
-
+        int row, col;
         while (true) {
-            printBoard(board);
-
-            // Human move
-            makeMove(board, HUMAN_PLAYER, scanner);
-
-            // Check for a win or a draw
-            if (checkWin(board, HUMAN_PLAYER)) {
-                printBoard(board);
-                System.out.println("You win!");
-                break;
-            } else if (isBoardFull(board)) {
-                printBoard(board);
-                System.out.println("It's a draw!");
-                break;
-            }
-
-            // AI move
-            makeAIMove(board);
-
-            // Check for a win or a draw
-            if (checkWin(board, AI_PLAYER)) {
-                printBoard(board);
-                System.out.println("AI wins!");
-                break;
-            } else if (isBoardFull(board)) {
-                printBoard(board);
-                System.out.println("It's a draw!");
-                break;
-            }
-        }
-
-        scanner.close();
-    }
-
-    private static void printBoard(char[][] board) {
-        System.out.println("  0 1 2");
-        for (int i = 0; i < 3; i++) {
-            System.out.print(i + "|");
-            for (int j = 0; j < 3; j++) {
-                System.out.print(board[i][j] + "|");
-            }
-            System.out.println("\n  -----");
-        }
-    }
-
-    private static void makeMove(char[][] board, char player, Scanner scanner) {
-        while (true) {
-            System.out.println("Enter your move (row and column): ");
-            int row = scanner.nextInt();
-            int col = scanner.nextInt();
-
-            if (row >= 0 && row < 3 && col >= 0 && col < 3 && board[row][col] == EMPTY) {
-                board[row][col] = player;
+            System.out.print("Enter your move (row and column): ");
+            row = scanner.nextInt();
+            col = scanner.nextInt();
+            if (row >= 0 && row < SIZE && col >= 0 && col < SIZE && board[row][col] == '-') {
+                board[row][col] = 'O';
                 break;
             } else {
                 System.out.println("Invalid move. Try again.");
@@ -75,112 +176,31 @@ public class TicTacToeAlphaBeta {
         }
     }
 
-    private static void makeAIMove(char[][] board) {
-        int[] bestMove = findBestMove(board);
-        board[bestMove[0]][bestMove[1]] = AI_PLAYER;
-    }
+    public static void main(String[] args) {
+        char[][] board = new char[SIZE][SIZE];
+        initializeBoard(board);
+        System.out.println("Welcome to Tic-Tac-Toe!");
+        System.out.println("You are 'O' and the computer is 'X'.");
+        System.out.println("Player's move is represented as (row, column) from (0,0) to (2,2).");
+        System.out.println("Let's begin!");
 
-    private static int[] findBestMove(char[][] board) {
-        int[] bestMove = { -1, -1 };
-        int bestScore = Integer.MIN_VALUE;
-
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                if (board[i][j] == EMPTY) {
-                    board[i][j] = AI_PLAYER;
-                    int score = minimax(board, 0, false, Integer.MIN_VALUE, Integer.MAX_VALUE);
-                    board[i][j] = EMPTY; // Undo the move
-
-                    if (score > bestScore) {
-                        bestScore = score;
-                        bestMove[0] = i;
-                        bestMove[1] = j;
-                    }
-                }
-            }
+        int turn = 0;
+        while (!isGameOver(board)) {
+            printBoard(board);
+            if (turn == 0)
+                playerMove(board);
+            else
+                findBestMove(board);
+            turn = 1 - turn;
         }
 
-        return bestMove;
-    }
-
-    private static int minimax(char[][] board, int depth, boolean isMaximizing, int alpha, int beta) {
-        if (checkWin(board, HUMAN_PLAYER)) {
-            return -1;
-        } else if (checkWin(board, AI_PLAYER)) {
-            return 1;
-        } else if (isBoardFull(board)) {
-            return 0;
-        }
-
-        if (isMaximizing) {
-            int bestScore = Integer.MIN_VALUE;
-
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 3; j++) {
-                    if (board[i][j] == EMPTY) {
-                        board[i][j] = AI_PLAYER;
-                        int score = minimax(board, depth + 1, false, alpha, beta);
-                        board[i][j] = EMPTY; // Undo the move
-                        bestScore = Math.max(bestScore, score);
-                        alpha = Math.max(alpha, bestScore);
-                        if (beta <= alpha) {
-                            break; // Beta cutoff
-                        }
-                    }
-                }
-            }
-
-            return bestScore;
-        } else {
-            int bestScore = Integer.MAX_VALUE;
-
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 3; j++) {
-                    if (board[i][j] == EMPTY) {
-                        board[i][j] = HUMAN_PLAYER;
-                        int score = minimax(board, depth + 1, true, alpha, beta);
-                        board[i][j] = EMPTY; // Undo the move
-                        bestScore = Math.min(bestScore, score);
-                        beta = Math.min(beta, bestScore);
-                        if (beta <= alpha) {
-                            break; // Alpha cutoff
-                        }
-                    }
-                }
-            }
-
-            return bestScore;
-        }
-    }
-
-    private static boolean checkWin(char[][] board, char player) {
-        // Check rows, columns, and diagonals for a win
-        for (int i = 0; i < 3; i++) {
-            if (board[i][0] == player && board[i][1] == player && board[i][2] == player) {
-                return true; // Row win
-            }
-            if (board[0][i] == player && board[1][i] == player && board[2][i] == player) {
-                return true; // Column win
-            }
-        }
-        if (board[0][0] == player && board[1][1] == player && board[2][2] == player) {
-            return true; // Diagonal win (top-left to bottom-right)
-        }
-        if (board[0][2] == player && board[1][1] == player && board[2][0] == player) {
-            return true; // Diagonal win (top-right to bottom-left)
-        }
-
-        return false;
-    }
-
-    private static boolean isBoardFull(char[][] board) {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                if (board[i][j] == EMPTY) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        printBoard(board);
+        int score = evaluateBoard(board);
+        if (score == 10)
+            System.out.println("Computer wins!");
+        else if (score == -10)
+            System.out.println("Player wins!");
+        else
+            System.out.println("It's a draw!");
     }
 }
