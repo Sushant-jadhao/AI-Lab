@@ -128,7 +128,7 @@ public class iddfs {
     }
 
     public static void main(String[] args) {
-        System.out.println("Depth First Search");
+        System.out.println("Iterative Deepening Depth First Search");
         idDFSMC();
     }
 }
