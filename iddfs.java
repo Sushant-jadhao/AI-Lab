@@ -1,4 +1,3 @@
-package AIPrograms;
 
 import java.util.*;
 
@@ -89,7 +88,7 @@ public class iddfs {
             }
             System.out.println("M: " + s.mr + " C: " + s.cr);
         }
-        System.out.println("Total Depth : "+ depthCount);
+        System.out.println("Total Depth : " + depthCount);
     }
 
     public static void dlDFSMC(State current, int depth, Map<State, State> parent, Set<State> visited) {

@@ -1,4 +1,3 @@
-package AIPrograms;
 
 import java.util.*;
 
@@ -97,7 +96,7 @@ public class dldfs {
         if (current.isGoal()) {
             printStates(parent, current);
             return true;
-            
+
         }
 
         List<State> nextState = nextStates(current);
@@ -105,23 +104,24 @@ public class dldfs {
             if (!visited.contains(state)) {
                 visited.add(state);
                 parent.put(state, current);
-                if(dlDFSMC(state, depth-1, parent, visited)){
+                if (dlDFSMC(state, depth - 1, parent, visited)) {
                     return true;
                 }
             }
         }
-    
+
         return false;
     }
 
     public static void main(String[] args) {
-        System.out.println("Depth First Search");
+        System.out.println("Depth Limiting Depth First Search");
         Map<State, State> parent = new HashMap<>();
         Set<State> visited = new HashSet<>();
         State initiState = new State(3, 3, 0, 0, true);
         visited.add(initiState);
-        if(!dlDFSMC(initiState, 12, parent, visited)){
+        if (!dlDFSMC(initiState, 12, parent, visited)) {
             System.out.println("No Solution Found");
-        };
+        }
+        ;
     }
 }

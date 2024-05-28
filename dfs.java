@@ -1,14 +1,12 @@
-package AIPrograms;
 
 import java.util.*;
 
 public class dfs {
-    static class State{
+    static class State {
         int ml, cl, mr, cr;
         boolean bl;
 
-
-        public State(int ml, int cl, int mr, int cr, boolean bl){
+        public State(int ml, int cl, int mr, int cr, boolean bl) {
             this.ml = ml;
             this.cl = cl;
             this.mr = mr;
@@ -16,51 +14,52 @@ public class dfs {
             this.bl = bl;
         }
 
-        public boolean isValid(){
-            if(ml < 0 || cl < 0 || mr < 0 || cr < 0 || (ml!=0 && ml < cl) || (mr!=0 && mr < cr)){
+        public boolean isValid() {
+            if (ml < 0 || cl < 0 || mr < 0 || cr < 0 || (ml != 0 && ml < cl) || (mr != 0 && mr < cr)) {
                 return false;
             }
             return true;
         }
 
-        public boolean isGoal(){
+        public boolean isGoal() {
             return (ml == 0 && cl == 0);
         }
 
         @Override
-        public boolean equals(Object obj){
-            if(this == obj) return true;
-            if(obj == null || getClass() != obj.getClass()) return false;
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null || getClass() != obj.getClass())
+                return false;
             State s = (State) obj;
-            return ml==s.ml && cl == s.cl && mr == s.mr && cr == s.cr && bl == s.bl;
+            return ml == s.ml && cl == s.cl && mr == s.mr && cr == s.cr && bl == s.bl;
         }
 
         @Override
-        public int hashCode(){
+        public int hashCode() {
             return Objects.hash(ml, cl, mr, cr, bl);
         }
 
     }
 
-
-    public static List<State>  nextStates (State current){
-        int m_moves [] = {1, 0 , 2, 0, 1};
-        int c_moves[] = {0, 1, 0, 2, 1};
+    public static List<State> nextStates(State current) {
+        int m_moves[] = { 1, 0, 2, 0, 1 };
+        int c_moves[] = { 0, 1, 0, 2, 1 };
         List<State> newStates = new ArrayList<>();
 
-        for(int i=0 ; i< m_moves.length; i++){
+        for (int i = 0; i < m_moves.length; i++) {
             int ml = m_moves[i];
             int cl = c_moves[i];
             int mr = -ml;
             int cr = -cl;
-            if(current.bl){
+            if (current.bl) {
                 State newS = new State(current.ml - ml, current.cl - cl, current.mr - mr, current.cr - cr, false);
-                if(newS.isValid()){
+                if (newS.isValid()) {
                     newStates.add(newS);
                 }
-            }else{
+            } else {
                 State newS = new State(current.ml + ml, current.cl + cl, current.mr + mr, current.cr + cr, true);
-                if(newS.isValid()){
+                if (newS.isValid()) {
                     newStates.add(newS);
                 }
             }
@@ -68,28 +67,28 @@ public class dfs {
         return newStates;
     }
 
-    public static void printStates(Map<State, State>parent , State goal){
+    public static void printStates(Map<State, State> parent, State goal) {
         List<State> result = new ArrayList<>();
         State curState = goal;
-        while(curState != null){
+        while (curState != null) {
             result.add(curState);
             curState = parent.get(curState);
         }
 
         Collections.reverse(result);
 
-        for(State s : result){
-            System.out.print("M: "+s.ml + " C: "+s.cl);
-            if(s.bl){
+        for (State s : result) {
+            System.out.print("M: " + s.ml + " C: " + s.cl);
+            if (s.bl) {
                 System.out.print("|Boat      |");
-            }else{
+            } else {
                 System.out.print("|      Boat|");
             }
-            System.out.println("M: "+s.mr + " C: "+s.cr);
+            System.out.println("M: " + s.mr + " C: " + s.cr);
         }
     }
 
-    public static void dfsMC(){
+    public static void dfsMC() {
         Stack<State> stack = new Stack<>();
         Set<State> visited = new HashSet<>();
         Map<State, State> parent = new HashMap<>();
@@ -98,24 +97,24 @@ public class dfs {
         stack.push(initiState);
         visited.add(initiState);
 
-        while(!stack.isEmpty()){
+        while (!stack.isEmpty()) {
             State current = stack.pop();
 
-            if(current.isGoal()){
+            if (current.isGoal()) {
                 printStates(parent, current);
                 return;
             }
 
             List<State> nextState = nextStates(current);
-            for(State state : nextState){
-                if(!visited.contains(state)){
+            for (State state : nextState) {
+                if (!visited.contains(state)) {
                     visited.add(state);
                     stack.push(state);
                     parent.put(state, current);
                 }
             }
         }
-        
+
     }
 
     public static void main(String[] args) {
