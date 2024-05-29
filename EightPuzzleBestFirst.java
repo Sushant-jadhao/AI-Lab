@@ -93,7 +93,7 @@ public class EightPuzzleBestFirst {
                     }
                     new_board[x][y] = new_board[nx][ny];
                     new_board[nx][ny] = 0;
-                    var newState = new State(new_board, nx, ny, Manhattan(new_board), cur);
+                    State newState = new State(new_board, nx, ny, Manhattan(new_board), cur);
                     pq.add(newState);
                 }
             }
