@@ -1,4 +1,10 @@
-
+//Examples :
+// TO+GO=OUT
+// SEND+MORE=MONEY
+// EAT+THAT=APPLE
+// SOME+TIME=SPENT
+// CROSS +ROADS=DANGER
+// BASE+BALL=GAMES
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
