@@ -137,7 +137,11 @@ public static void main(String[] args)
 	System.out.println("Updated Cost :");
 	Map<String, Map<String, Integer> > Updated_cost
 	= UpdateCost(H, Conditions, weight);
-	System.out.println("*".repeat(75));
+	StringBuilder stars = new StringBuilder();
+        for (int i = 0; i < 75; i++) {
+            stars.append("*");
+        }
+        System.out.println(stars.toString());
 	System.out.println("Shortest Path :");
 	System.out.println(
 	ShortestPath("A", Updated_cost, H));
